@@ -11,6 +11,7 @@ Route::get('/rezerwacja/sukces', [ReservationController::class, 'success'])->nam
 // API – dla formularza klienta (AJAX)
 Route::get('/api/menus', [ReservationController::class, 'menus'])->name('api.menus');
 Route::get('/api/blocked-dates', [ReservationController::class, 'blockedDates'])->name('api.blocked-dates');
+Route::get('/api/menu-products', [ReservationController::class, 'menuProducts'])->name('api.menu-products');
 
 // API – kalendarz admina (chroniony middleware auth)
 Route::get('/api/calendar-events', [ReservationController::class, 'calendarEvents'])

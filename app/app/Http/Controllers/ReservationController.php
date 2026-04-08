@@ -6,7 +6,9 @@ use App\Mail\ReservationConfirmationMail;
 use App\Mail\ReservationNotificationMail;
 use App\Models\EventType;
 use App\Models\Menu;
+use App\Models\MenuProduct;
 use App\Models\Reservation;
+use App\Models\ReservationMenuItem;
 use App\Models\Room;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -26,33 +28,49 @@ class ReservationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'first_name'    => 'required|string|max:100',
-            'last_name'     => 'required|string|max:100',
-            'email'         => 'required|email|max:255',
-            'phone'         => 'nullable|string|max:30',
-            'event_type_id' => 'required|exists:event_types,id',
-            'room_id'       => 'nullable|exists:rooms,id',
-            'menu_id'       => 'nullable|exists:menus,id',
-            'event_date'    => 'required|date|after_or_equal:today',
-            'event_time'    => 'required|date_format:H:i',
-            'duration_hours'=> 'required|numeric|min:1',
-            'guest_count'   => 'required|integer|min:1',
-            'notes'         => 'nullable|string|max:2000',
+            'first_name'          => 'required|string|max:100',
+            'last_name'           => 'required|string|max:100',
+            'email'               => 'required|email|max:255',
+            'phone'               => 'nullable|string|max:30',
+            'event_type_id'       => 'required|exists:event_types,id',
+            'room_id'             => 'nullable|exists:rooms,id',
+            'menu_id'             => 'nullable|exists:menus,id',
+            'menu_type'           => 'nullable|in:proposal,custom',
+            'event_date'          => 'required|date|after_or_equal:today',
+            'event_time'          => 'required|date_format:H:i',
+            'duration_hours'      => 'required|numeric|min:1',
+            'guest_count'         => 'required|integer|min:1',
+            'notes'               => 'nullable|string|max:2000',
+            // custom menu items
+            'custom_items'              => 'nullable|array',
+            'custom_items.*.product_id' => 'required|exists:menu_products,id',
+            'custom_items.*.percentage' => 'required|numeric|min:1|max:200',
         ], [
-            'first_name.required'    => 'Imię jest wymagane.',
-            'last_name.required'     => 'Nazwisko jest wymagane.',
-            'email.required'         => 'Adres e-mail jest wymagany.',
-            'email.email'            => 'Podaj prawidłowy adres e-mail.',
-            'event_type_id.required' => 'Wybierz rodzaj imprezy.',
-            'event_date.required'    => 'Data imprezy jest wymagana.',
+            'first_name.required'       => 'Imię jest wymagane.',
+            'last_name.required'        => 'Nazwisko jest wymagane.',
+            'email.required'            => 'Adres e-mail jest wymagany.',
+            'email.email'               => 'Podaj prawidłowy adres e-mail.',
+            'event_type_id.required'    => 'Wybierz rodzaj imprezy.',
+            'event_date.required'       => 'Data imprezy jest wymagana.',
             'event_date.after_or_equal' => 'Data imprezy nie może być w przeszłości.',
-            'event_time.required'    => 'Godzina rozpoczęcia jest wymagana.',
-            'duration_hours.required'=> 'Czas trwania jest wymagany.',
-            'guest_count.required'   => 'Liczba gości jest wymagana.',
-            'guest_count.min'        => 'Minimalna liczba gości to 1.',
+            'event_time.required'       => 'Godzina rozpoczęcia jest wymagana.',
+            'duration_hours.required'   => 'Czas trwania jest wymagany.',
+            'guest_count.required'      => 'Liczba gości jest wymagana.',
+            'guest_count.min'           => 'Minimalna liczba gości to 1.',
         ]);
 
         $reservation = Reservation::create($validated);
+
+        // Zapisz custom menu items
+        if (! empty($validated['custom_items'])) {
+            foreach ($validated['custom_items'] as $item) {
+                ReservationMenuItem::create([
+                    'reservation_id'  => $reservation->id,
+                    'menu_product_id' => $item['product_id'],
+                    'percentage'      => $item['percentage'],
+                ]);
+            }
+        }
 
         // Mail do klienta
         Mail::to($reservation->email)->send(new ReservationConfirmationMail($reservation));
@@ -81,6 +99,30 @@ class ReservationController extends Controller
 
         $room = Room::findOrFail($roomId);
         return response()->json($room->getBookedDates());
+    }
+
+    public function menuProducts(): JsonResponse
+    {
+        $products = MenuProduct::where('active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->groupBy('category')
+            ->map(fn ($items, $category) => [
+                'label'    => \App\Models\MenuProduct::categoryLabel($category),
+                'category' => $category,
+                'items'    => $items->map(fn (MenuProduct $p) => [
+                    'id'              => $p->id,
+                    'name'            => $p->name,
+                    'description'     => $p->description,
+                    'serving_type'    => $p->serving_type,
+                    'has_percentage'  => $p->hasPercentage(),
+                    'min_percentage'  => $p->minPercentage(),
+                    'price_per_person'=> (float) $p->price_per_person,
+                ]),
+            ])
+            ->values();
+
+        return response()->json($products);
     }
 
     public function calendarEvents(Request $request): JsonResponse

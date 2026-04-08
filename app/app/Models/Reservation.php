@@ -10,7 +10,7 @@ class Reservation extends Model
 {
     protected $fillable = [
         'reference', 'first_name', 'last_name', 'email', 'phone',
-        'event_type_id', 'room_id', 'menu_id',
+        'event_type_id', 'room_id', 'menu_id', 'menu_type',
         'event_date', 'event_time', 'duration_hours', 'guest_count',
         'notes', 'status', 'internal_notes', 'total_price',
     ];
@@ -41,6 +41,11 @@ class Reservation extends Model
     public function menu(): BelongsTo
     {
         return $this->belongsTo(Menu::class);
+    }
+
+    public function menuItems(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ReservationMenuItem::class)->with('product');
     }
 
     public function getFullNameAttribute(): string

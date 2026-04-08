@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\EventType;
 use App\Models\Menu;
 use App\Models\MenuCourse;
+use App\Models\MenuProduct;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -155,6 +156,70 @@ class DatabaseSeeder extends Seeder
                     }
                 }
             }
+        }
+
+        // Katalog produktów menu
+        $products = [
+            // Zupy
+            ['category' => 'soup', 'serving_type' => null, 'name' => 'Żurek staropolski z kiełbasą i jajkiem',           'price_per_person' => 12.00, 'sort_order' => 1],
+            ['category' => 'soup', 'serving_type' => null, 'name' => 'Rosół z kury z makaronem',                          'price_per_person' => 10.00, 'sort_order' => 2],
+            ['category' => 'soup', 'serving_type' => null, 'name' => 'Barszcz czerwony z uszkami',                        'price_per_person' => 11.00, 'sort_order' => 3],
+            ['category' => 'soup', 'serving_type' => null, 'name' => 'Krem z białych szparagów z grzankami',              'price_per_person' => 15.00, 'sort_order' => 4],
+            ['category' => 'soup', 'serving_type' => null, 'name' => 'Krem pomidorowy z grzankami',                       'price_per_person' => 10.00, 'sort_order' => 5],
+            ['category' => 'soup', 'serving_type' => null, 'name' => 'Zupa grzybowa z łazankami',                         'price_per_person' => 13.00, 'sort_order' => 6],
+
+            // Przystawki
+            ['category' => 'starter', 'serving_type' => null, 'name' => 'Roladki z łososia i serka śmietankowego',       'price_per_person' => 18.00, 'sort_order' => 1],
+            ['category' => 'starter', 'serving_type' => null, 'name' => 'Carpaccio z wołowiny z rukolą i parmezanem',    'price_per_person' => 22.00, 'sort_order' => 2],
+            ['category' => 'starter', 'serving_type' => null, 'name' => 'Deska wędlin i serów z kiszonkami',             'price_per_person' => 20.00, 'sort_order' => 3],
+            ['category' => 'starter', 'serving_type' => null, 'name' => 'Sałatka grecka',                                 'price_per_person' => 14.00, 'sort_order' => 4],
+            ['category' => 'starter', 'serving_type' => null, 'name' => 'Bruschetta z pomidorami i bazylią',              'price_per_person' => 12.00, 'sort_order' => 5],
+            ['category' => 'starter', 'serving_type' => null, 'name' => 'Tatar z łososia na blini',                       'price_per_person' => 25.00, 'sort_order' => 6],
+
+            // Dania główne – talerz (1 szt./os., stała porcja)
+            ['category' => 'main', 'serving_type' => 'plate', 'name' => 'Polędwiczka wieprzowa w sosie grzybowym',        'price_per_person' => 45.00, 'sort_order' => 1],
+            ['category' => 'main', 'serving_type' => 'plate', 'name' => 'Filet z dorsza na puree z groszku',              'price_per_person' => 40.00, 'sort_order' => 2],
+            ['category' => 'main', 'serving_type' => 'plate', 'name' => 'Pierś z kaczki z demi-glace',                    'price_per_person' => 55.00, 'sort_order' => 3],
+            ['category' => 'main', 'serving_type' => 'plate', 'name' => 'Kurczak pieczony z warzywami',                   'price_per_person' => 35.00, 'sort_order' => 4],
+            ['category' => 'main', 'serving_type' => 'plate', 'name' => 'Schab pieczony z sosem własnym',                 'price_per_person' => 38.00, 'sort_order' => 5],
+            ['category' => 'main', 'serving_type' => 'plate', 'name' => 'Łosoś pieczony z cytryną i koperkiem',           'price_per_person' => 48.00, 'sort_order' => 6],
+
+            // Dania główne – półmisek (min. 60%)
+            ['category' => 'main', 'serving_type' => 'platter', 'name' => 'Golonka pieczona',                             'price_per_person' => 38.00, 'sort_order' => 7],
+            ['category' => 'main', 'serving_type' => 'platter', 'name' => 'Żeberka wędzone BBQ',                          'price_per_person' => 42.00, 'sort_order' => 8],
+            ['category' => 'main', 'serving_type' => 'platter', 'name' => 'Pieczeń wieprzowa z kością',                   'price_per_person' => 40.00, 'sort_order' => 9],
+            ['category' => 'main', 'serving_type' => 'platter', 'name' => 'Kurczak z rożna – cały',                       'price_per_person' => 32.00, 'sort_order' => 10],
+
+            // Dodatki skrobiowe
+            ['category' => 'side_starchy', 'serving_type' => null, 'name' => 'Ziemniaki gotowane z koperkiem',            'price_per_person' => 6.00,  'sort_order' => 1],
+            ['category' => 'side_starchy', 'serving_type' => null, 'name' => 'Frytki',                                    'price_per_person' => 7.00,  'sort_order' => 2],
+            ['category' => 'side_starchy', 'serving_type' => null, 'name' => 'Kopytka',                                   'price_per_person' => 8.00,  'sort_order' => 3],
+            ['category' => 'side_starchy', 'serving_type' => null, 'name' => 'Ryż na sypko',                              'price_per_person' => 5.00,  'sort_order' => 4],
+            ['category' => 'side_starchy', 'serving_type' => null, 'name' => 'Puree ziemniaczane',                        'price_per_person' => 7.00,  'sort_order' => 5],
+            ['category' => 'side_starchy', 'serving_type' => null, 'name' => 'Kasza gryczana',                            'price_per_person' => 6.00,  'sort_order' => 6],
+
+            // Surówki / sałatki (min. 50%)
+            ['category' => 'salad', 'serving_type' => null, 'name' => 'Surówka z białej kapusty z marchewką',             'price_per_person' => 5.00,  'sort_order' => 1],
+            ['category' => 'salad', 'serving_type' => null, 'name' => 'Mizeria (ogórek w śmietanie z koperkiem)',          'price_per_person' => 5.00,  'sort_order' => 2],
+            ['category' => 'salad', 'serving_type' => null, 'name' => 'Surówka z czerwonej kapusty',                      'price_per_person' => 5.00,  'sort_order' => 3],
+            ['category' => 'salad', 'serving_type' => null, 'name' => 'Sałatka grecka (ogórek, pomidor, feta)',            'price_per_person' => 8.00,  'sort_order' => 4],
+            ['category' => 'salad', 'serving_type' => null, 'name' => 'Sałata lodowa z pomidorami i dressingiem',          'price_per_person' => 7.00,  'sort_order' => 5],
+            ['category' => 'salad', 'serving_type' => null, 'name' => 'Sałatka jarzynowa',                                'price_per_person' => 6.00,  'sort_order' => 6],
+
+            // Sosy (min. 50%)
+            ['category' => 'sauce', 'serving_type' => null, 'name' => 'Sos pieczeniowy',                                  'price_per_person' => 4.00,  'sort_order' => 1],
+            ['category' => 'sauce', 'serving_type' => null, 'name' => 'Sos grzybowy',                                     'price_per_person' => 6.00,  'sort_order' => 2],
+            ['category' => 'sauce', 'serving_type' => null, 'name' => 'Sos śmietanowy z koperkiem',                       'price_per_person' => 5.00,  'sort_order' => 3],
+            ['category' => 'sauce', 'serving_type' => null, 'name' => 'Sos czosnkowy',                                    'price_per_person' => 4.00,  'sort_order' => 4],
+            ['category' => 'sauce', 'serving_type' => null, 'name' => 'Sos BBQ',                                           'price_per_person' => 4.00,  'sort_order' => 5],
+            ['category' => 'sauce', 'serving_type' => null, 'name' => 'Sos pomidorowy prowansalski',                       'price_per_person' => 5.00,  'sort_order' => 6],
+        ];
+
+        foreach ($products as $data) {
+            MenuProduct::firstOrCreate(
+                ['name' => $data['name'], 'category' => $data['category']],
+                array_merge($data, ['active' => true])
+            );
         }
 
         // Przykładowa sala
