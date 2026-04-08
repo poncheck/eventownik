@@ -10,8 +10,14 @@ until php -r "new PDO('mysql:host=${DB_HOST};port=${DB_PORT};dbname=${DB_DATABAS
 done
 echo "Database ready."
 
+# Create .env from .env.example if missing
+if [ ! -f /var/www/.env ]; then
+    echo "No .env found, copying from .env.example..."
+    cp /var/www/.env.example /var/www/.env
+fi
+
 # Generate app key if missing
-if [ -z "$(grep '^APP_KEY=base64:' /var/www/.env 2>/dev/null)" ]; then
+if ! grep -q '^APP_KEY=base64:' /var/www/.env; then
     echo "Generating APP_KEY..."
     php artisan key:generate --force
 fi
