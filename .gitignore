@@ -1,0 +1,13 @@
+# Claude
+.claude/
+
+# Laravel .env (produkcja)
+app/.env
+app/.env.backup
+
+# vendor tylko jeśli ktoś commituje vendor — my go nie commitujemy
+# Ale tu nie ma go, więc bez znaczenia
+
+# System
+.DS_Store
+Thumbs.db
