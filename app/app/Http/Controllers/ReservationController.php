@@ -27,6 +27,11 @@ class ReservationController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        // Honeypot – boty wypełniają ukryte pole "website"
+        if ($request->filled('website')) {
+            return redirect()->route('reservation.success', ['ref' => 'bot']);
+        }
+
         $validated = $request->validate([
             'first_name'          => 'required|string|max:100',
             'last_name'           => 'required|string|max:100',
@@ -41,6 +46,7 @@ class ReservationController extends Controller
             'duration_hours'      => 'required|numeric|min:1',
             'guest_count'         => 'required|integer|min:1',
             'notes'               => 'nullable|string|max:2000',
+            'rodo_consent'        => 'required|accepted',
             // custom menu items
             'custom_items'              => 'nullable|array',
             'custom_items.*.product_id' => 'required|exists:menu_products,id',
@@ -57,6 +63,8 @@ class ReservationController extends Controller
             'duration_hours.required'   => 'Czas trwania jest wymagany.',
             'guest_count.required'      => 'Liczba gości jest wymagana.',
             'guest_count.min'           => 'Minimalna liczba gości to 1.',
+            'rodo_consent.required'     => 'Zgoda na przetwarzanie danych osobowych jest wymagana.',
+            'rodo_consent.accepted'     => 'Zgoda na przetwarzanie danych osobowych jest wymagana.',
         ]);
 
         $reservation = Reservation::create($validated);
@@ -157,14 +165,35 @@ class ReservationController extends Controller
                         'reference'   => $r->reference,
                         'guests'      => $r->guest_count,
                         'room'        => $r->room?->name ?? '—',
-                        'email'       => $r->email,
-                        'phone'       => $r->phone ?? '—',
+                        // Maskujemy PII – pełne dane dostępne wyłącznie w panelu admina
+                        'email'       => $this->maskEmail($r->email),
+                        'phone'       => $r->phone ? $this->maskPhone($r->phone) : '—',
                         'edit_url'    => '/admin/reservations/' . $r->id . '/edit',
                     ],
                 ];
             });
 
         return response()->json($reservations);
+    }
+
+    public function privacy()
+    {
+        return view('privacy');
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────────────
+
+    private function maskEmail(string $email): string
+    {
+        [$local, $domain] = explode('@', $email, 2);
+        $masked = substr($local, 0, 1) . str_repeat('*', max(strlen($local) - 2, 1)) . substr($local, -1);
+        return $masked . '@' . $domain;
+    }
+
+    private function maskPhone(string $phone): string
+    {
+        $clean = preg_replace('/\D/', '', $phone);
+        return substr($clean, 0, 3) . '***' . substr($clean, -2);
     }
 
     public function menus(Request $request): JsonResponse

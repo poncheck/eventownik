@@ -59,7 +59,7 @@ class IcsController extends Controller
         return URL::signedRoute(
             'ics.single',
             ['reservation' => $reservation->id],
-            now()->addYear()
+            now()->addDays(90) // 3 miesiące – wystarczy dla klienta, krótszy okrąg naruszenia
         );
     }
 
@@ -91,7 +91,7 @@ class IcsController extends Controller
                 'Status: ' . $r->status_label,
                 'Gości: ' . $r->guest_count,
                 $r->menu ? 'Menu: ' . $r->menu->name : null,
-                $r->notes ? 'Uwagi: ' . $r->notes : null,
+                $r->notes ? 'Uwagi: ' . mb_substr($r->notes, 0, 500) : null,
             ]));
 
             $lines = array_merge($lines, [

@@ -16,11 +16,21 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Admin
+        $adminEmail    = env('ADMIN_EMAIL', 'admin@eventownik.pl');
+        $adminPassword = env('ADMIN_PASSWORD');
+
+        if (! $adminPassword) {
+            throw new \RuntimeException(
+                'ADMIN_PASSWORD nie jest ustawiony w .env! ' .
+                'Ustaw silne hasło przed uruchomieniem seedera.'
+            );
+        }
+
         User::firstOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@eventownik.pl')],
+            ['email' => $adminEmail],
             [
                 'name'              => 'Administrator',
-                'password'          => Hash::make(env('ADMIN_PASSWORD', 'changeme123!')),
+                'password'          => Hash::make($adminPassword),
                 'email_verified_at' => now(),
             ]
         );

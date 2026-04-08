@@ -42,10 +42,12 @@
     </div>
     @endif
 
-    <form action="{{ route('reservation.store') }}" method="POST" class="space-y-8">
+    <form action="{{ route('reservation.store') }}" method="POST" class="space-y-8" novalidate>
         @csrf
 
         {{-- ── Dane kontaktowe ─────────────────────────────────────────── --}}
+        {{-- honeypot - ukryte pole, boty je wypełnią --}}
+        <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <h2 class="text-lg font-semibold text-gray-700 mb-5">Dane kontaktowe</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -290,15 +292,39 @@
             </template>
         </template>
 
+        {{-- ── Zgoda RODO ──────────────────────────────────────────────── --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Zgoda na przetwarzanie danych</h2>
+            <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" name="rodo_consent" value="1" required
+                       class="mt-1 h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-400
+                              @error('rodo_consent') border-red-400 @enderror">
+                <span class="text-sm text-gray-600 leading-relaxed">
+                    Wyrażam zgodę na przetwarzanie moich danych osobowych (imię, nazwisko, adres e-mail,
+                    nr telefonu) przez administratora serwisu w celu obsługi zapytania rezerwacyjnego,
+                    zgodnie z
+                    <a href="{{ route('privacy') }}" target="_blank"
+                       class="text-amber-600 underline hover:text-amber-700">Polityką prywatności</a>.
+                    Podanie danych jest dobrowolne, lecz niezbędne do realizacji rezerwacji.
+                    Dane będą przechowywane przez okres niezbędny do realizacji usługi i wymagany przepisami prawa.
+                    <span class="text-red-500">*</span>
+                </span>
+            </label>
+            @error('rodo_consent')
+                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+            @enderror
+            <p class="text-xs text-gray-400 mt-3">
+                Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania
+                oraz przenoszenia. Aby skorzystać z tych praw, skontaktuj się z administratorem.
+            </p>
+        </div>
+
         {{-- Submit --}}
         <div class="text-center pt-2">
             <button type="submit"
                     class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-10 py-3.5 rounded-xl text-base transition-colors shadow-md">
                 Wyślij zapytanie
             </button>
-            <p class="text-xs text-gray-400 mt-3">
-                Wysyłając formularz akceptujesz kontakt w celu realizacji rezerwacji.
-            </p>
         </div>
 
     </form>
