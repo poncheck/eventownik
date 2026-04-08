@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zapytanie przyjęte</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css'])
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center px-4">
 <div class="max-w-lg w-full text-center bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
