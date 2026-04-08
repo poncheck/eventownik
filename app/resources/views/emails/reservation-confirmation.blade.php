@@ -65,7 +65,26 @@
     </div>
     @endif
 
-    <p style="margin-top:24px;font-size:13px;color:#6b7280;">
+    @php
+      $icsUrl  = \App\Http\Controllers\IcsController::signedUrl($reservation);
+      $gcStart = $reservation->event_date->format('Ymd') . 'T' . str_replace(':', '', substr($reservation->event_time, 0, 5)) . '00';
+      $gcEnd   = $reservation->event_date->copy()->setTimeFromTimeString($reservation->event_time)->addHours((int)$reservation->duration_hours)->format('Ymd\THis');
+      $gcTitle = urlencode($reservation->eventType->name . ' – ' . $reservation->full_name);
+      $gcUrl   = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$gcTitle}&dates={$gcStart}/{$gcEnd}";
+    @endphp
+    <div style="margin-top:24px;padding:16px;background:#f8fafc;border-radius:8px;text-align:center;">
+      <p style="font-size:12px;color:#6b7280;margin:0 0 10px;">Dodaj termin do swojego kalendarza:</p>
+      <a href="{{ $icsUrl }}"
+         style="display:inline-block;margin:4px;padding:8px 16px;background:#ffffff;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;color:#374151;text-decoration:none;font-weight:500;">
+        📅 Pobierz plik .ics
+      </a>
+      <a href="{{ $gcUrl }}"
+         style="display:inline-block;margin:4px;padding:8px 16px;background:#ffffff;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;color:#374151;text-decoration:none;font-weight:500;">
+        Google Calendar
+      </a>
+    </div>
+
+    <p style="margin-top:16px;font-size:13px;color:#6b7280;">
       Jeśli masz pytania, odpowiedz na tę wiadomość lub skontaktuj się z nami bezpośrednio.
     </p>
   </div>

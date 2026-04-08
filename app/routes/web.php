@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IcsController;
 use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,3 +16,12 @@ Route::get('/api/blocked-dates', [ReservationController::class, 'blockedDates'])
 Route::get('/api/calendar-events', [ReservationController::class, 'calendarEvents'])
     ->middleware(['auth'])
     ->name('api.calendar-events');
+
+// ICS eksport – klient (signed URL, bez logowania)
+Route::get('/ics/{reservation}', [IcsController::class, 'single'])->name('ics.single');
+
+// ICS eksport – admin
+Route::middleware(['auth'])->prefix('admin-ics')->group(function () {
+    Route::get('/reservation/{reservation}', [IcsController::class, 'adminSingle'])->name('ics.admin.single');
+    Route::get('/all', [IcsController::class, 'adminAll'])->name('ics.admin.all');
+});

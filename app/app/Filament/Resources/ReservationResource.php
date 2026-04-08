@@ -206,6 +206,12 @@ class ReservationResource extends Resource
                         \App\Mail\ReservationConfirmedMail::sendTo($record);
                         Notification::make()->title('Rezerwacja potwierdzona, mail wysłany.')->success()->send();
                     }),
+                Action::make('export_ics')
+                    ->label('Eksportuj ICS')
+                    ->icon('heroicon-o-calendar-days')
+                    ->color('gray')
+                    ->url(fn (Reservation $record) => route('ics.admin.single', $record))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
                 DeleteAction::make(),
             ])
@@ -213,6 +219,14 @@ class ReservationResource extends Resource
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
+            ])
+            ->headerActions([
+                Action::make('export_all_ics')
+                    ->label('Pobierz wszystkie (.ics)')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->url(route('ics.admin.all'))
+                    ->openUrlInNewTab(),
             ]);
     }
 
