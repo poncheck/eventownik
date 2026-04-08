@@ -10,7 +10,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-COPY . .
+COPY app/ .
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
     && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache

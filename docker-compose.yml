@@ -1,8 +1,8 @@
 services:
   app:
     build:
-      context: ./app
-      dockerfile: ../docker/php/Dockerfile
+      context: .
+      dockerfile: docker/php/Dockerfile
     restart: unless-stopped
     env_file: ./app/.env
     volumes:
