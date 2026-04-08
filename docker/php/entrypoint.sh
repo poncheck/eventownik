@@ -22,6 +22,14 @@ if ! grep -q '^APP_KEY=base64:' /var/www/.env; then
     php artisan key:generate --force
 fi
 
+# Fix permissions – volumes are mounted as root, PHP-FPM runs as www-data
+chown -R www-data:www-data \
+    /var/www/storage \
+    /var/www/bootstrap/cache
+chmod -R ug+rwx \
+    /var/www/storage \
+    /var/www/bootstrap/cache
+
 # Run migrations and seeders
 php artisan migrate --force
 php artisan db:seed --force
