@@ -24,7 +24,7 @@ class MenuProductResource extends Resource
     protected static ?string $navigationLabel = 'Katalog dań';
     protected static ?string $modelLabel = 'Danie';
     protected static ?string $pluralModelLabel = 'Katalog dań';
-    protected static string|\BackedEnum|null $navigationGroup = 'Menu';
+    protected static \UnitEnum|string|null $navigationGroup = 'Menu';
     protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
