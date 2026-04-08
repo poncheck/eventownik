@@ -21,7 +21,7 @@ COPY app/ .
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Zbuduj assety frontendu (Tailwind CSS, JS)
-RUN npm ci --prefer-offline \
+RUN npm install \
     && npm run build \
     && rm -rf node_modules
 
