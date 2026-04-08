@@ -5,6 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReservationResource\Pages;
 use App\Models\Menu;
 use App\Models\Reservation;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -190,7 +195,7 @@ class ReservationResource extends Resource
                     ->relationship('room', 'name'),
             ])
             ->actions([
-                Tables\Actions\Action::make('confirm')
+                Action::make('confirm')
                     ->label('Potwierdź')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
@@ -201,12 +206,12 @@ class ReservationResource extends Resource
                         \App\Mail\ReservationConfirmedMail::sendTo($record);
                         Notification::make()->title('Rezerwacja potwierdzona, mail wysłany.')->success()->send();
                     }),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
