@@ -83,6 +83,48 @@ class ReservationController extends Controller
         return response()->json($room->getBookedDates());
     }
 
+    public function calendarEvents(Request $request): JsonResponse
+    {
+        $reservations = Reservation::with(['eventType', 'room'])
+            ->whereNotIn('status', ['cancelled'])
+            ->get()
+            ->map(function (Reservation $r) {
+                $color = match ($r->status) {
+                    'new'              => '#94a3b8', // szary
+                    'contacted'        => '#f59e0b', // pomarańczowy
+                    'awaiting_payment' => '#3b82f6', // niebieski
+                    'confirmed'        => '#22c55e', // zielony
+                    'completed'        => '#8b5cf6', // fioletowy
+                    default            => '#94a3b8',
+                };
+
+                $start = $r->event_date->format('Y-m-d') . 'T' . $r->event_time;
+                $end   = $r->event_date->copy()
+                    ->setTimeFromTimeString($r->event_time)
+                    ->addHours((int) $r->duration_hours)
+                    ->format('Y-m-d\TH:i');
+
+                return [
+                    'id'              => $r->id,
+                    'title'           => $r->full_name . ' · ' . $r->eventType->name,
+                    'start'           => $start,
+                    'end'             => $end,
+                    'color'           => $color,
+                    'extendedProps'   => [
+                        'status'      => $r->status_label,
+                        'reference'   => $r->reference,
+                        'guests'      => $r->guest_count,
+                        'room'        => $r->room?->name ?? '—',
+                        'email'       => $r->email,
+                        'phone'       => $r->phone ?? '—',
+                        'edit_url'    => '/admin/reservations/' . $r->id . '/edit',
+                    ],
+                ];
+            });
+
+        return response()->json($reservations);
+    }
+
     public function menus(Request $request): JsonResponse
     {
         $eventTypeId = $request->query('event_type_id');
