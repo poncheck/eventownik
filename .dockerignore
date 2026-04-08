@@ -1,0 +1,15 @@
+# Nigdy nie wrzucaj sekretów do obrazu Docker
+app/.env
+app/.env.*
+!app/.env.example
+
+# Vendory i cache – generowane podczas budowania
+app/vendor/
+app/node_modules/
+app/bootstrap/cache/*.php
+
+# Git i narzędzia deweloperskie
+.git/
+.gitignore
+docs/
+*.md
